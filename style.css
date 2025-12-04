@@ -1,0 +1,72 @@
+:root {
+  --bg-dark: #282828;
+  --bg: #282828;
+  --bg-soft: #32302f;
+  --bg1: #3c3836;
+  --bg2: #504945;
+  --bg3: #665c54;
+  --bg4: #7c6f64;
+  --fg: #ebdbb2;
+  --fg0: #fbf1c7;
+  --fg1: #ebdbb2;
+  --fg2: #d5c4a1;
+  --fg3: #bdae93;
+  --fg4: #a89984;
+  --gray: #928374;
+  --gray-dark: #a89984;
+  --red: #fb4934;
+  --red-dim: #cc241d;
+  --green: #b8bb26;
+  --green-dim: #98971a;
+  --yellow: #fabd2f;
+  --yellow-dim: #d79921;
+  --blue: #83a598;
+  --blue-dim: #458588;
+  --purple: #d3869b;
+  --purple-dim: #b16286;
+  --aqua: #8ec07c;
+  --aqua-dim: #689d6a;
+  --orange: #fe8019;
+  --orange-dim: #d65d0e;
+}
+
+html, body {
+    background-color: var(--bg);
+    box-sizing: border-box;
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+}
+
+#toolbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3rem;
+    background-color: var(--bg1);
+    color: var(--fg);
+    display: flex;
+    align-items: center;
+    padding: 0 2rem; /* Match the side spacing */
+    z-index: 1000;
+}
+
+#footer {
+    height:100%;
+    background-color: var(--bg1);
+    color: var(--fg);
+}
+
+#main {
+    margin-top: calc(3rem); /* Toolbar height + desired spacing */
+    padding: 2rem;
+    padding-top: 0; /* Don't double up the top spacing */
+    height: calc(100% - 3rem - 1rem);
+    box-sizing: border-box;
+    color: var(--fg);
+    background-color: var(--bg);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}

@@ -5,6 +5,6 @@ void hello_from_wasm(void) {
 }
 
 int main(void) {
-  printf("WASM loaded!\n");
+  printf("main.c is loaded\n");
   return 0;
 }

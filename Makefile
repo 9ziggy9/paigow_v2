@@ -5,6 +5,10 @@ EXPORTS=-sEXPORTED_FUNCTIONS=_hello_from_wasm,_main -sEXPORTED_RUNTIME_METHODS=c
 std.js: main.c
 	$(CC) $(CFLAGS) $(EXPORTS) -o $@ $<
 
-.PHONY: clean
+
+.PHONY: clean serve
+serve:
+	python -m http.server 8000
+
 clean:	
 	rm -rf std.js *.wasm
