@@ -70,6 +70,7 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 
 #tile-container {
@@ -141,11 +142,52 @@ html, body {
 
 
 #tile-grid span:hover {
-    transform: scale(1.16);
+    transform: scale(1.1);
     filter: brightness(1.3);
     z-index: 10;
 }
 
 #tile-grid span img {
     width: 100%;
+}
+
+.dimmed {
+    filter: brightness(1.3);
+}
+
+.checkmark-overlay {
+    position: relative;
+}
+
+.checkmark-overlay::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    height: 80%;
+    background-image: url('./tile_assets/checkmark.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    pointer-events: none;
+    z-index: 20;
+}
+
+#tile-modal {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#tile-modal-content {
+    background-color:red;
 }
