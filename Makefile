@@ -1,8 +1,9 @@
 CC=emcc
 CFLAGS=-Wall -pedantic -Werror -Wconversion
+EXPORTS=-sEXPORTED_FUNCTIONS=_hello_from_wasm,_main -sEXPORTED_RUNTIME_METHODS=ccall,cwrap
 
-main: main.c
-	$(CC) $(CFLAGS) -o std.js main.c
+std.js: main.c
+	$(CC) $(CFLAGS) $(EXPORTS) -o $@ $<
 
 .PHONY: clean
 clean:	
