@@ -1,3 +1,4 @@
 *.wasm
+engine.js
 std.js
 main

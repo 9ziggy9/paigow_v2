@@ -1,7 +1,7 @@
 #include <stdio.h>
 
-void hello_from_wasm(void) {
-  printf("Hello from WASM!\n");
+void wasm_ok(void) {
+  printf("Successfully initialized cFFI and engine.\n");
 }
 
 int main(void) {
