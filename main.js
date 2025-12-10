@@ -27,6 +27,12 @@ function initCFFI(m) {
     return {
 	JSTileIdToBitRep: _JSTileIdToBitRep,
 	JSComposeTiles  : _JSComposeTiles,
+	read_raw_tiles  : (n) => m.ccall(
+	    "read_raw_tiles",
+	    null,
+	    ["number"],
+	    [n]
+	),
     }
 }
 
@@ -97,7 +103,9 @@ function uiOpenModal(tileState, engine) {
 	engine.JSTileIdToBitRep(h1), engine.JSTileIdToBitRep(h2),
 	engine.JSTileIdToBitRep(l1), engine.JSTileIdToBitRep(l2)
     );
-    console.log("0x" + bitwiseRep.toString(16));
+    console.log("From JS: 0x" + bitwiseRep.toString(16));
+    console.log("Attempting ccall");
+    engine.read_raw_tiles(bitwiseRep);
 
     uiTileSetCheckmarks(hiHandContainer.appendChild(h1.cloneNode(true)), false);
     uiTileSetCheckmarks(hiHandContainer.appendChild(h2.cloneNode(true)), false);

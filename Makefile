@@ -1,6 +1,8 @@
 CC=emcc
 CFLAGS=-Wall -pedantic -Werror -Wconversion
-EXPORTS=-sEXPORTED_FUNCTIONS='["_wasm_ok","_main"]' -sEXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
+EXPORTS= -sEXPORTED_FUNCTIONS='[\
+"_read_raw_tiles","_wasm_ok","_main"]'\
+-sEXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
 
 engine.js: main.c
 	$(CC) $(CFLAGS) $(EXPORTS) -o $@ $<
