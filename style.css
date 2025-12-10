@@ -189,5 +189,16 @@ html, body {
 }
 
 #tile-modal-content {
-    background-color:red;
+    border-radius: 1rem;
+    width:33%;
+    height:33%;
+    background-color: var(--bg);
+    transition: transform 0.2s ease, filter 0.2s ease;
+    animation: slideIn calc(0.6s * var(--animation-speed)) ease-out backwards;
+}
+
+#tile-modal.hidden {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none:
 }
