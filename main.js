@@ -25,14 +25,8 @@ function initTileState(tileGridId) {
 }
 
 function uiTileGridUpdateSelections(tileState) {
-    tileState.refs().forEach(t => {
-	t.classList.remove("dimmed");
-	t.classList.remove("checkmark-overlay");
-    });
-    tileState.tileSet().forEach(t => {
-	t.classList.add("dimmed");
-	t.classList.add("checkmark-overlay");
-    });
+    tileState.refs().forEach(t => uiTileSetCheckmarks(t, false));
+    tileState.tileSet().forEach(t => uiTileSetCheckmarks(t, true));
 }
 
 function uiTileGrid(tileState) {
@@ -47,26 +41,32 @@ function uiTileGrid(tileState) {
     });
 }
 
+function uiTileSetCheckmarks(t, b) {
+    if (b) {
+	t.classList.add("checkmark-overlay");
+	t.classList.add("dimmed");
+    } else {
+	t.classList.remove("checkmark-overlay");
+	t.classList.remove("dimmed");
+    }
+}
+
 function uiOpenModal(tileState) {
     const modalBg = document.getElementById("tile-modal");
     modalBg.classList.remove("hidden");
-    const ts = tileState.tileSet();
-    ts.forEach(t => {
-	t.classList.remove("checkmark-overlay");
-	t.classList.remove("dimmed");
-    });
-
-    const [h1,h2,l1,l2] = ts;
+    const [h1,h2,l1,l2] = tileState.tileSet();
 
     const hiHandContainer = document.getElementById("tile-modal-hi-hand");
     const loHandContainer = document.getElementById("tile-modal-lo-hand");
     hiHandContainer.innerHTML = "";
     loHandContainer.innerHTML = "";
 
-    hiHandContainer.appendChild(h1.cloneNode(true));
-    hiHandContainer.appendChild(h2.cloneNode(true));
-    loHandContainer.appendChild(l1.cloneNode(true));
-    loHandContainer.appendChild(l2.cloneNode(true));
+    callEngine();
+
+    uiTileSetCheckmarks(hiHandContainer.appendChild(h1.cloneNode(true)), false);
+    uiTileSetCheckmarks(hiHandContainer.appendChild(h2.cloneNode(true)), false);
+    uiTileSetCheckmarks(loHandContainer.appendChild(l1.cloneNode(true)), false);
+    uiTileSetCheckmarks(loHandContainer.appendChild(l2.cloneNode(true)), false);
 }
 
 function uiCloseModal(tileState) {
@@ -85,6 +85,10 @@ function uiModalClick() {
     modal.addEventListener("click", ev => {
 	ev.stopPropagation();
     });
+}
+
+function callEngine() {
+    console.log("Calling WebAssembly engine.");
 }
 
 function main() {
