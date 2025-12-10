@@ -4,8 +4,8 @@ function initTileState(tileGridId) {
     let _num_selected_tiles = 0;
     let _selected_tiles     = new Set();
     return {
-	refs: () => _tile_refs,
-	count: () => _num_selected_tiles,
+	refs:    () => _tile_refs,
+	count:   () => _num_selected_tiles,
 	tileSet: () => _selected_tiles,
 	selectTile: el => {
 	    _selected_tiles.add(el);
@@ -16,6 +16,10 @@ function initTileState(tileGridId) {
 	    _selected_tiles.delete(el);
 	    console.log("Deselected tile: ", el);
 	    return --_num_selected_tiles;
+	},
+	reset: () => {
+	    _num_selected_tiles = 0;
+	    _selected_tiles.clear();
 	}
     }
 }
@@ -28,7 +32,7 @@ function uiTileGridUpdateSelections(tileState) {
     tileState.tileSet().forEach(t => {
 	t.classList.add("dimmed");
 	t.classList.add("checkmark-overlay");
-    })
+    });
 }
 
 function uiTileGrid(tileState) {
@@ -38,17 +42,40 @@ function uiTileGrid(tileState) {
 	    if (tileState.tileSet().has(t)) tileState.deselectTile(t);
 	    else tileState.selectTile(t);
 	    uiTileGridUpdateSelections(tileState);
+	    if (tileState.count() === 4) uiOpenModal(tileState);
 	});
     });
 }
 
-function uiCloseModal() {
+function uiOpenModal(tileState) {
+    const modalBg = document.getElementById("tile-modal");
+    modalBg.classList.remove("hidden");
+    const ts = tileState.tileSet();
+    ts.forEach(t => {
+	t.classList.remove("checkmark-overlay");
+	t.classList.remove("dimmed");
+    });
+
+    const [h1,h2,l1,l2] = ts;
+
+    const hiHandContainer = document.getElementById("tile-modal-hi-hand");
+    const loHandContainer = document.getElementById("tile-modal-lo-hand");
+    hiHandContainer.innerHTML = "";
+    loHandContainer.innerHTML = "";
+
+    hiHandContainer.appendChild(h1.cloneNode(true));
+    hiHandContainer.appendChild(h2.cloneNode(true));
+    loHandContainer.appendChild(l1.cloneNode(true));
+    loHandContainer.appendChild(l2.cloneNode(true));
+}
+
+function uiCloseModal(tileState) {
     const modalBg = document.getElementById("tile-modal");
     modalBg.addEventListener("click", ev => {
         if (ev.target === modalBg) {
-            console.log("Hiding modal.");
+	    tileState.reset();
+	    uiTileGridUpdateSelections(tileState);
             modalBg.classList.toggle("hidden");
-	    NUM_SELECTED_TILES = 0;
         }
     });
 }
@@ -64,7 +91,7 @@ function main() {
     console.log("main.js is loaded");
     const tileState = initTileState("tile-grid");
     uiTileGrid(tileState);
-    uiCloseModal();
+    uiCloseModal(tileState);
     uiModalClick();
 }
 
