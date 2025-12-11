@@ -1,32 +1,12 @@
 function initCFFI(m) {
-    // JavaScript glue
-    const TILE_BIT_MAP = {
-	"teen"      : 0xF,
-	"day"       : 0xE,
-	"yun"       : 0xD,
-	"gor"       : 0xC,
-	"muuy"      : 0xB,
-	"chong"     : 0xA,
-	"bon"       : 0x9,
-	"fu"        : 0x8,
-	"ping"      : 0x7,
-	"chit"      : 0x6,
-	"look"      : 0x5,
-	"chopgow"   : 0x4,
-	"chopbot"   : 0x3,
-	"chopchit"  : 0x2,
-	"chopng"    : 0x1,
-	"geejun"    : 0x0,
-    }
-    const _JSTileIdToBitRep = (tl) => TILE_BIT_MAP[tl.id.split("_")[1]];
-    const _JSComposeTiles   = (t1, t2, t3, t4) =>
-	  (t1 << 12) | (t2 << 8) | (t3 << 4) | (t4 << 0);
-
     m.ccall("wasm_ok", null, [], []);
-
     return {
-	JSTileIdToBitRep: _JSTileIdToBitRep,
-	JSComposeTiles  : _JSComposeTiles,
+	sort_hand_by_points : h => m.ccall(
+	    "sort_hand_by_points",
+	    "number",
+	    ["number"],
+	    [h]
+	),
 	read_raw_tiles  : (n) => m.ccall(
 	    "read_raw_tiles",
 	    null,
@@ -38,10 +18,38 @@ function initCFFI(m) {
 
 function initTileState(tileGridId) {
     console.log("Initializing tile state.");
+    const _GET_NTH_TILE = (h, n) => ((h >> ((3 - n) * 4)) & 0xF)
+    const _TILE_BIT_MAP = {
+	"teen": 0xF, "day": 0xE, "yun": 0xD, "gor": 0xC, "muuy": 0xB,
+	"chong": 0xA, "bon": 0x9, "fu": 0x8, "ping": 0x7, "chit": 0x6,
+	"look": 0x5, "chopgow": 0x4, "chopbot": 0x3, "chopchit": 0x2,
+	"chopng": 0x1, "geejun": 0x0
+    };
+
+    const _TILE_ID_MAP = [
+	"tl_geejun", "tl_chopng", "tl_chopchit", "tl_chopbot",
+	"tl_chopgow", "tl_look", "tl_chit", "tl_ping", "tl_fu",
+	"tl_bon", "tl_chong", "tl_muuy", "tl_gor", "tl_yun",
+	"tl_day", "tl_teen"
+    ];
+    
     let _tile_refs = document.getElementById(tileGridId).querySelectorAll("span");
     let _num_selected_tiles = 0;
-    let _selected_tiles     = new Set();
+    let _selected_tiles = new Set();
+    let _hand = {
+	lo: [],
+	hi: [],
+    };
     return {
+	utility: {
+	    tileIdMap: (id) => _TILE_ID_MAP[id],
+	    tileBitMap: (b) => _TILE_BIT_MAP[b],
+	    tileIdToBitRep: (t) => _TILE_BIT_MAP[t.id.split("_")[1]],
+	    composeTiles: (t1,t2,t3,t4) => (t1 << 12) |
+		(t2 << 8) |
+		(t3 << 4) |
+		(t4 << 0),
+	},
 	refs:    () => _tile_refs,
 	count:   () => _num_selected_tiles,
 	tileSet: () => _selected_tiles,
@@ -58,7 +66,23 @@ function initTileState(tileGridId) {
 	reset: () => {
 	    _num_selected_tiles = 0;
 	    _selected_tiles.clear();
-	}
+	    _hand = {};
+	},
+	syncHandState: (bitwiseRep) => {
+	    const selectedArray = Array.from(_selected_tiles);
+	    const orderedElements = [0, 1, 2, 3].map(n => {
+		const nibble = _GET_NTH_TILE(bitwiseRep, n);
+		console.log("current nibble: ", nibble);
+		const tileId = _TILE_ID_MAP[nibble];
+		return selectedArray.find(el => el.id.startsWith(tileId));
+	    });
+
+	    _hand = {
+		hi: orderedElements.slice(0, 2),
+		lo: orderedElements.slice(2, 4),
+	    };
+	},
+	hand: () => _hand,
     }
 }
 
@@ -99,18 +123,28 @@ function uiOpenModal(tileState, engine) {
     hiHandContainer.innerHTML = "";
     loHandContainer.innerHTML = "";
 
-    const bitwiseRep = engine.JSComposeTiles(
-	engine.JSTileIdToBitRep(h1), engine.JSTileIdToBitRep(h2),
-	engine.JSTileIdToBitRep(l1), engine.JSTileIdToBitRep(l2)
+    const bitwiseRep = tileState.utility.composeTiles(
+	tileState.utility.tileIdToBitRep(h1), tileState.utility.tileIdToBitRep(h2),
+	tileState.utility.tileIdToBitRep(l1), tileState.utility.tileIdToBitRep(l2)
     );
-    console.log("From JS: 0x" + bitwiseRep.toString(16));
-    console.log("Attempting ccall");
-    engine.read_raw_tiles(bitwiseRep);
 
-    uiTileSetCheckmarks(hiHandContainer.appendChild(h1.cloneNode(true)), false);
-    uiTileSetCheckmarks(hiHandContainer.appendChild(h2.cloneNode(true)), false);
-    uiTileSetCheckmarks(loHandContainer.appendChild(l1.cloneNode(true)), false);
-    uiTileSetCheckmarks(loHandContainer.appendChild(l2.cloneNode(true)), false);
+    const sortedHandRepr = engine.sort_hand_by_points(bitwiseRep);
+    tileState.syncHandState(sortedHandRepr);
+
+    const houseWayHand = tileState.hand();
+
+    uiTileSetCheckmarks(
+	hiHandContainer.appendChild(houseWayHand.hi[1].cloneNode(true)), false
+    );
+    uiTileSetCheckmarks(
+	hiHandContainer.appendChild(houseWayHand.hi[0].cloneNode(true)), false
+    );
+    uiTileSetCheckmarks(
+	loHandContainer.appendChild(houseWayHand.lo[1].cloneNode(true)), false
+    );
+    uiTileSetCheckmarks(
+	loHandContainer.appendChild(houseWayHand.lo[0].cloneNode(true)), false
+    );
 }
 
 function uiCloseModal(tileState) {

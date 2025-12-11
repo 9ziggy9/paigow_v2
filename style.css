@@ -201,7 +201,7 @@ html, body {
 }
 
 #tile-modal-hi-hand {
-    transform: rotate(90deg);
+    /* transform: rotate(90deg); */
 }
 
 #tile-modal-lo-hand {}
