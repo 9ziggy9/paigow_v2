@@ -127,22 +127,13 @@ function uiTileSetCheckmarks(t, b) {
 function uiOpenModal(tileState, engine) {
     const modalBg = document.getElementById("tile-modal");
     modalBg.classList.remove("hidden");
-    const [h1,h2,l1,l2] = tileState.tileSet();
 
     const hiHandContainer = document.getElementById("tile-modal-hi-hand");
     const loHandContainer = document.getElementById("tile-modal-lo-hand");
     hiHandContainer.innerHTML = "";
     loHandContainer.innerHTML = "";
 
-    const bitwiseRep = tileState.utility.composeTiles(
-	tileState.utility.tileIdToBitRep(h1), tileState.utility.tileIdToBitRep(h2),
-	tileState.utility.tileIdToBitRep(l1), tileState.utility.tileIdToBitRep(l2)
-    );
-
-    const sortedHandRepr = engine.sort_hand_by_points(bitwiseRep);
-    tileState.syncHandState(sortedHandRepr);
-
-    const houseWayHand = tileState.hand();
+    const houseWayHand = applyHouseWay(tileState, engine);
 
     uiTileSetCheckmarks(
 	hiHandContainer.appendChild(houseWayHand.hi[1].cloneNode(true)), false
@@ -156,6 +147,20 @@ function uiOpenModal(tileState, engine) {
     uiTileSetCheckmarks(
 	loHandContainer.appendChild(houseWayHand.lo[0].cloneNode(true)), false
     );
+}
+
+function applyHouseWay(tileState, engine) {
+    console.log("Calling house way.");
+    const [h1,h2,l1,l2] = tileState.tileSet();
+    const bitwiseRep = tileState.utility.composeTiles(
+	tileState.utility.tileIdToBitRep(h1), tileState.utility.tileIdToBitRep(h2),
+	tileState.utility.tileIdToBitRep(l1), tileState.utility.tileIdToBitRep(l2)
+    );
+
+    const sortedHand = engine.sort_hand_by_points(bitwiseRep);
+    tileState.syncHandState(sortedHand);
+
+    return tileState.hand();
 }
 
 function uiCloseModal(tileState) {
@@ -176,9 +181,6 @@ function uiModalClick() {
     });
 }
 
-function callEngine() {
-    console.log("Calling WebAssembly engine.");
-}
 
 function main() {
     console.log("main.js is loaded");
