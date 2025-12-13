@@ -1,3 +1,7 @@
+// const EXCEPTION_HAND_MAP = {
+//     "0xA500": 0x050A
+// }
+
 function initCFFI(m) {
     m.ccall("wasm_ok", null, [], []);
     return {
@@ -55,12 +59,10 @@ function initTileState(tileGridId) {
 	tileSet: () => _selected_tiles,
 	selectTile: el => {
 	    _selected_tiles.add(el);
-	    console.log("Selected tile: ", el);
 	    return ++_num_selected_tiles;
 	},
 	deselectTile: el => {
 	    _selected_tiles.delete(el);
-	    console.log("Deselected tile: ", el);
 	    return --_num_selected_tiles;
 	},
 	reset: () => {
@@ -70,11 +72,20 @@ function initTileState(tileGridId) {
 	},
 	syncHandState: (bitwiseRep) => {
 	    const selectedArray = Array.from(_selected_tiles);
+	    const tileGroups = {};
+
+	    selectedArray.forEach(el => {
+		const baseName = el.id.split('_').slice(0, 2).join('_'); // "tl_teen"
+		if (!tileGroups[baseName]) tileGroups[baseName] = [];
+		tileGroups[baseName].push(el);
+	    });
+
 	    const orderedElements = [0, 1, 2, 3].map(n => {
 		const nibble = _GET_NTH_TILE(bitwiseRep, n);
-		console.log("current nibble: ", nibble);
 		const tileId = _TILE_ID_MAP[nibble];
-		return selectedArray.find(el => el.id.startsWith(tileId));
+
+		// Pop first available tile with this name
+		return tileGroups[tileId]?.shift();
 	    });
 
 	    _hand = {
