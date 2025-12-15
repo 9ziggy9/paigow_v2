@@ -1,6 +1,6 @@
 #!/bin/bash
 git checkout production && \
-git merge master && \
+git merge -m master && \
 make engine.js && \
 git add -f engine.js engine.wasm && \
 git commit -m "Deploy: $(date)" && \

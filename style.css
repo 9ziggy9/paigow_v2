@@ -193,18 +193,21 @@ html, body {
     justify-content: center;
     align-items: center;
     border-radius: 1rem;
-    width:33%;
-    height:33%;
     background-color: var(--bg1);
     transition: transform 0.2s ease, filter 0.2s ease;
     animation: slideIn calc(0.6s * var(--animation-speed)) ease-out backwards;
+    cursor: none;
+    padding: 3rem;
 }
 
 #tile-modal-hi-hand {
+    display: flex;
     transform: rotate(90deg);
 }
 
-#tile-modal-lo-hand {}
+#tile-modal-lo-hand {
+    display: flex;
+}
 
 #tile-modal.hidden {
     visibility: hidden;
