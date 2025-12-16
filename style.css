@@ -135,7 +135,7 @@ body {
 }
 
 /* square to rect transformation on mobile */
-@media (max-width: 299px) {
+@media (max-width: 400px) {
     #tile-container { aspect-ratio: 1/2; width: min(100%, 20vh); }
     #tile-grid {
         grid-template-columns: repeat(4, 1fr);
