@@ -1,122 +1,56 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="vars.css">
+  <link rel="stylesheet" href="sandbox.css">
+  <link rel="stylesheet" href="anim.css">
   <title>Tiles v2.0</title>
 </head>
 <body>
-  <div id="toolbar">
-    <span>pai gow tiles v2.0</span>
-  </div>
+  <div id="toolbar">pg_v2</div>
   <div id="main">
-    <div id="tile-container">
-      <div id="tile-modal" class="hidden">
-	<div id="tile-modal-content">
-	  <div id="tile-modal-lo-hand">
-	  </div>
-	  <div id="tile-modal-hi-hand">
-	  </div>
-	</div>
+    <div id="tile-modal" class="hidden">
+      <div id="tile-modal-content">
+	<div id="tile-modal-lo-hand"></div>
+	<div id="tile-modal-hi-hand"></div>
       </div>
-	<div id="tile-grid">
-	    <span id="tl_geejun_1">
-		<img src="/tile_assets/tl_geejun1.svg">
-	    </span>
-	    <span id="tl_geejun_2">
-		<img src="/tile_assets/tl_geejun2.svg">
-	    </span>
-	    <span id="tl_teen_1">
-		<img src="/tile_assets/tl_teen.svg">
-	    </span>
-	    <span id="tl_teen_2">
-		<img src="/tile_assets/tl_teen.svg">
-	    </span>
-	    <span id="tl_day_1">
-		<img src="/tile_assets/tl_day.svg">
-	    </span>
-	    <span id="tl_day_2">
-		<img src="/tile_assets/tl_day.svg">
-	    </span>
-	    <span id="tl_yun_1">
-		<img src="/tile_assets/tl_yun.svg">
-	    </span>
-	    <span id="tl_yun_2">
-		<img src="/tile_assets/tl_yun.svg">
-	    </span>
-	    <span id="tl_gor_1">
-		<img src="/tile_assets/tl_gor.svg">
-	    </span>
-	    <span id="tl_gor_2">
-		<img src="/tile_assets/tl_gor.svg">
-	    </span>
-	    <span id="tl_muuy_1">
-		<img src="/tile_assets/tl_muuy.svg">
-	    </span>
-	    <span id="tl_muuy_2">
-		<img src="/tile_assets/tl_muuy.svg">
-	    </span>
-	    <span id="tl_chong_1">
-		<img src="/tile_assets/tl_chong.svg">
-	    </span>
-	    <span id="tl_chong_2">
-		<img src="/tile_assets/tl_chong.svg">
-	    </span>
-	    <span id="tl_bon_1">
-		<img src="/tile_assets/tl_bon.svg">
-	    </span>
-	    <span id="tl_bon_2">
-		<img src="/tile_assets/tl_bon.svg">
-	    </span>
-	    <span id="tl_fu_1">
-		<img src="/tile_assets/tl_fu.svg">
-	    </span>
-	    <span id="tl_fu_2">
-		<img src="/tile_assets/tl_fu.svg">
-	    </span>
-	    <span id="tl_ping_1">
-		<img src="/tile_assets/tl_ping.svg">
-	    </span>
-	    <span id="tl_ping_2">
-		<img src="/tile_assets/tl_ping.svg">
-	    </span>
-	    <span id="tl_chit_1">
-		<img src="/tile_assets/tl_chit.svg">
-	    </span>
-	    <span id="tl_chit_2">
-		<img src="/tile_assets/tl_chit.svg">
-	    </span>
-	    <span id="tl_look_1">
-		<img src="/tile_assets/tl_look.svg">
-	    </span>
-	    <span id="tl_look_2">
-		<img src="/tile_assets/tl_look.svg">
-	    </span>
-	    <span id="tl_chopgow_1">
-		<img src="/tile_assets/tl_chopgow1.svg">
-	    </span>
-	    <span id="tl_chopgow_2">
-		<img src="/tile_assets/tl_chopgow2.svg">
-	    </span>
-	    <span id="tl_chopbot_1">
-		<img src="/tile_assets/tl_chopbot1.svg">
-	    </span>
-	    <span id="tl_chopbot_2">
-		<img src="/tile_assets/tl_chopbot2.svg">
-	    </span>
-	    <span id="tl_chopchit_1">
-		<img src="/tile_assets/tl_chopchit1.svg">
-	    </span>
-	    <span id="tl_chopchit_2">
-		<img src="/tile_assets/tl_chopchit2.svg">
-	    </span>
-	    <span id="tl_chopng_1">
-		<img src="/tile_assets/tl_chopng1.svg">
-	    </span>
-	    <span id="tl_chopng_2">
-		<img src="/tile_assets/tl_chopng2.svg">
-	    </span>
-	</div>
     </div>
+    <div id="tile-container">
+      <div id="tile-grid">
+	<span id="tl_geejun_1"><img src="/tile_assets/tl_geejun1.svg"></span>
+	<span id="tl_geejun_2"><img src="/tile_assets/tl_geejun2.svg"></span>
+	<span id="tl_teen_1"><img src="/tile_assets/tl_teen.svg"></span>
+	<span id="tl_teen_2"><img src="/tile_assets/tl_teen.svg"></span>
+	<span id="tl_day_1"><img src="/tile_assets/tl_day.svg"></span>
+	<span id="tl_day_2"><img src="/tile_assets/tl_day.svg"></span>
+	<span id="tl_yun_1"><img src="/tile_assets/tl_yun.svg"></span>
+	<span id="tl_yun_2"><img src="/tile_assets/tl_yun.svg"></span>
+	<span id="tl_gor_1"><img src="/tile_assets/tl_gor.svg"></span>
+	<span id="tl_gor_2"><img src="/tile_assets/tl_gor.svg"></span>
+	<span id="tl_muuy_1"><img src="/tile_assets/tl_muuy.svg"></span>
+	<span id="tl_muuy_2"><img src="/tile_assets/tl_muuy.svg"></span>
+	<span id="tl_chong_1"><img src="/tile_assets/tl_chong.svg"></span>
+	<span id="tl_chong_2"><img src="/tile_assets/tl_chong.svg"></span>
+	<span id="tl_bon_1"><img src="/tile_assets/tl_bon.svg"></span>
+	<span id="tl_bon_2"><img src="/tile_assets/tl_bon.svg"></span>
+	<span id="tl_fu_1"><img src="/tile_assets/tl_fu.svg"></span>
+	<span id="tl_fu_2"><img src="/tile_assets/tl_fu.svg"></span>
+	<span id="tl_ping_1"><img src="/tile_assets/tl_ping.svg"></span>
+	<span id="tl_ping_2"><img src="/tile_assets/tl_ping.svg"></span>
+	<span id="tl_chit_1"><img src="/tile_assets/tl_chit.svg"></span>
+	<span id="tl_chit_2"><img src="/tile_assets/tl_chit.svg"></span>
+	<span id="tl_look_1"><img src="/tile_assets/tl_look.svg"></span>
+	<span id="tl_look_2"><img src="/tile_assets/tl_look.svg"></span>
+	<span id="tl_chopgow_1"><img src="/tile_assets/tl_chopgow1.svg"></span>
+	<span id="tl_chopgow_2"><img src="/tile_assets/tl_chopgow2.svg"></span>
+	<span id="tl_chopbot_1"><img src="/tile_assets/tl_chopbot1.svg"></span>
+	<span id="tl_chopbot_2"><img src="/tile_assets/tl_chopbot2.svg"></span>
+	<span id="tl_chopchit_1"><img src="/tile_assets/tl_chopchit1.svg"></span>
+	<span id="tl_chopchit_2"><img src="/tile_assets/tl_chopchit2.svg"></span>
+	<span id="tl_chopng_1"><img src="/tile_assets/tl_chopng1.svg"></span>
+	<span id="tl_chopng_2"><img src="/tile_assets/tl_chopng2.svg"></span>
+      </div>
     </div>
   </div>
   <div id="footer">
