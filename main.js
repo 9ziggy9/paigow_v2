@@ -152,8 +152,8 @@ function applyHouseWay(tileState, engine) {
 	tileState.utility.tileIdToBitRep(l1), tileState.utility.tileIdToBitRep(l2)
     );
 
-    const sortedHand = engine.house_way(bitwiseRep);
-    tileState.syncHandState(sortedHand);
+    const houseWay = engine.house_way(bitwiseRep);
+    tileState.syncHandState(houseWay);
 
     return tileState.hand();
 }

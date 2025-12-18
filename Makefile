@@ -11,5 +11,8 @@ engine.js: main.c
 serve:
 	python -m http.server 8000
 
+native: main.c
+	gcc $(CFLAGS) -o $@ $<
+
 clean:	
-	rm -rf engine.js std.js *.wasm
+	rm -rf engine.js std.js *.wasm native

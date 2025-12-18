@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -47,11 +48,12 @@ TILE_CLASS(CHOPCHIT, 7, 1, RK_CHOPCHIT);
 TILE_CLASS(CHOPNG,   5, 1, RK_CHOPNG);
 
 // Tile sets.
-TILE_CLASS(ANY_TEN,   0, 2, RK_MUUY, RK_PING);
-TILE_CLASS(ANY_EIGHT, 8, 2, RK_YUN, RK_CHOPBOT);
-TILE_CLASS(ANY_SEVEN, 7, 2, RK_CHIT, RK_CHOPCHIT);
-TILE_CLASS(ANY_SIX,   6, 2, RK_CHONG, RK_LOOK);
-TILE_CLASS(ANY_FOUR,  4, 2, RK_GOR, RK_BON);
+TILE_CLASS(TEEN_OR_DAY, 0, 2, RK_TEEN,  RK_DAY);
+TILE_CLASS(ANY_TEN,     0, 2, RK_MUUY,  RK_PING);
+TILE_CLASS(ANY_EIGHT,   8, 2, RK_YUN,   RK_CHOPBOT);
+TILE_CLASS(ANY_SEVEN,   7, 2, RK_CHIT,  RK_CHOPCHIT);
+TILE_CLASS(ANY_SIX,     6, 2, RK_CHONG, RK_LOOK);
+TILE_CLASS(ANY_FOUR,    4, 2, RK_GOR,   RK_BON);
 
 typedef struct HouseWayException {
   uint16_t in;
@@ -64,24 +66,19 @@ typedef struct HouseWayExceptionList {
   size_t capacity;
 } HouseWayExceptionList;
 
-typedef struct HandSpecification {
+typedef struct HouseWayRule {
   TileClass h1; TileClass h2;
   TileClass l1; TileClass l2;
-} HandSpecification;
-
-typedef struct HouseWayRule {
-  HandSpecification in;
-  HandSpecification out;
 } HouseWayRule;
 
-#define DA_APPEND(xs, x) {			      	                        \
-  do {						      		                \
-    if ((xs)->count >= (xs)->capacity) {				        \
-      if ((xs)->capacity == 0) (xs)->capacity = 256;		                \
-      else (xs)->capacity *= 2;				                        \
-      (xs)->items = realloc((xs)->items, (xs)->capacity * sizeof(*(xs)->items); \
-    }								                \
-    (xs)->items[(xs)->count++] = (x);				                \
+#define DA_APPEND(xs, x)		      	                             \
+  do {						      		             \
+    if ((xs).count >= (xs).capacity) {				             \
+      if ((xs).capacity == 0) (xs).capacity = 256;		             \
+      else (xs).capacity *= 2;				                     \
+      (xs).items = realloc((xs).items, (xs).capacity * sizeof(*(xs).items)); \
+    }								             \
+    (xs).items[(xs).count++] = (x);				             \
   } while(0)
 
 
@@ -89,3 +86,25 @@ typedef struct ExceptionMapping {
   bool is_exception;
   uint16_t hand;
 } ExceptionMapping;
+
+const char *rank_to_name(TileRank rank) {
+  switch(rank) {
+    case RK_TEEN:     return "TEEN";
+    case RK_DAY:      return "DAY";
+    case RK_YUN:      return "YUN";
+    case RK_GOR:      return "GOR";
+    case RK_MUUY:     return "MUUY";
+    case RK_CHONG:    return "CHONG";
+    case RK_BON:      return "BON";
+    case RK_FU:       return "FU";
+    case RK_PING:     return "PING";
+    case RK_CHIT:     return "CHIT";
+    case RK_LOOK:     return "LOOK";
+    case RK_CHOPGOW:  return "CHOPGOW";
+    case RK_CHOPBOT:  return "CHOPBOT";
+    case RK_CHOPCHIT: return "CHOPCHIT";
+    case RK_CHOPNG:   return "CHOPNG";
+    case RK_GEEJUN:   return "GEEJUN";
+    default:          return "UNKNOWN";
+  }
+}
