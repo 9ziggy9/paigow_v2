@@ -919,8 +919,19 @@ async function createWasm() {
 
   
 
-  var printCharBuffers = [null,[],[]];
-  
+  var __abort_js = () =>
+      abort('native code called abort()');
+
+  var abortOnCannotGrowMemory = (requestedSize) => {
+      abort(`Cannot enlarge memory arrays to size ${requestedSize} bytes (OOM). Either (1) compile with -sINITIAL_MEMORY=X with X higher than the current value ${HEAP8.length}, (2) compile with -sALLOW_MEMORY_GROWTH which allows increasing the size at runtime, or (3) if you want malloc to return NULL (0) instead of this abort, compile with -sABORTING_MALLOC=0`);
+    };
+  var _emscripten_resize_heap = (requestedSize) => {
+      var oldSize = HEAPU8.length;
+      // With CAN_ADDRESS_2GB or MEMORY64, pointers are already unsigned.
+      requestedSize >>>= 0;
+      abortOnCannotGrowMemory(requestedSize);
+    };
+
   var UTF8Decoder = globalThis.TextDecoder && new TextDecoder();
   
   var findStringEnd = (heapOrArray, idx, maxBytesToRead, ignoreNul) => {
@@ -980,25 +991,6 @@ async function createWasm() {
       }
       return str;
     };
-  var printChar = (stream, curr) => {
-      var buffer = printCharBuffers[stream];
-      assert(buffer);
-      if (curr === 0 || curr === 10) {
-        (stream === 1 ? out : err)(UTF8ArrayToString(buffer));
-        buffer.length = 0;
-      } else {
-        buffer.push(curr);
-      }
-    };
-  
-  var flush_NO_FILESYSTEM = () => {
-      // flush anything remaining in the buffers during shutdown
-      _fflush(0);
-      if (printCharBuffers[1].length) printChar(1, 10);
-      if (printCharBuffers[2].length) printChar(2, 10);
-    };
-  
-  
   
     /**
      * Given a pointer 'ptr' to a null-terminated UTF8-encoded string in the
@@ -1024,6 +1016,43 @@ async function createWasm() {
         return ret;
       },
   };
+  var _fd_close = (fd) => {
+      abort('fd_close called without SYSCALLS_REQUIRE_FILESYSTEM');
+    };
+
+  var INT53_MAX = 9007199254740992;
+  
+  var INT53_MIN = -9007199254740992;
+  var bigintToI53Checked = (num) => (num < INT53_MIN || num > INT53_MAX) ? NaN : Number(num);
+  function _fd_seek(fd, offset, whence, newOffset) {
+    offset = bigintToI53Checked(offset);
+  
+  
+      return 70;
+    ;
+  }
+
+  var printCharBuffers = [null,[],[]];
+  
+  var printChar = (stream, curr) => {
+      var buffer = printCharBuffers[stream];
+      assert(buffer);
+      if (curr === 0 || curr === 10) {
+        (stream === 1 ? out : err)(UTF8ArrayToString(buffer));
+        buffer.length = 0;
+      } else {
+        buffer.push(curr);
+      }
+    };
+  
+  var flush_NO_FILESYSTEM = () => {
+      // flush anything remaining in the buffers during shutdown
+      _fflush(0);
+      if (printCharBuffers[1].length) printChar(1, 10);
+      if (printCharBuffers[2].length) printChar(2, 10);
+    };
+  
+  
   var _fd_write = (fd, iov, iovcnt, pnum) => {
       // hack to support printf in SYSCALLS_REQUIRE_FILESYSTEM=0
       var num = 0;
@@ -1305,13 +1334,11 @@ Module['FS_createPreloadedFile'] = FS.createPreloadedFile;
   'convertI32PairToI53',
   'convertI32PairToI53Checked',
   'convertU32PairToI53',
-  'bigintToI53Checked',
   'getTempRet0',
   'setTempRet0',
   'createNamedFunction',
   'zeroMemory',
   'getHeapMax',
-  'abortOnCannotGrowMemory',
   'growMemory',
   'withStackSave',
   'strError',
@@ -1493,11 +1520,13 @@ missingLibrarySymbols.forEach(missingLibrarySymbol)
   'checkStackCookie',
   'INT53_MAX',
   'INT53_MIN',
+  'bigintToI53Checked',
   'stackSave',
   'stackRestore',
   'stackAlloc',
   'ptrToString',
   'exitJS',
+  'abortOnCannotGrowMemory',
   'ENV',
   'ERRNO_CODES',
   'DNS',
@@ -1709,8 +1738,8 @@ function checkIncomingModuleAPI() {
 }
 
 // Imports from the Wasm binary.
-var _sort_hand_by_points = Module['_sort_hand_by_points'] = makeInvalidEarlyAccess('_sort_hand_by_points');
 var _wasm_ok = Module['_wasm_ok'] = makeInvalidEarlyAccess('_wasm_ok');
+var _house_way = Module['_house_way'] = makeInvalidEarlyAccess('_house_way');
 var _main = Module['_main'] = makeInvalidEarlyAccess('_main');
 var _fflush = makeInvalidEarlyAccess('_fflush');
 var _strerror = makeInvalidEarlyAccess('_strerror');
@@ -1726,8 +1755,8 @@ var __indirect_function_table = makeInvalidEarlyAccess('__indirect_function_tabl
 var wasmMemory = makeInvalidEarlyAccess('wasmMemory');
 
 function assignWasmExports(wasmExports) {
-  assert(typeof wasmExports['sort_hand_by_points'] != 'undefined', 'missing Wasm export: sort_hand_by_points');
   assert(typeof wasmExports['wasm_ok'] != 'undefined', 'missing Wasm export: wasm_ok');
+  assert(typeof wasmExports['house_way'] != 'undefined', 'missing Wasm export: house_way');
   assert(typeof wasmExports['main'] != 'undefined', 'missing Wasm export: main');
   assert(typeof wasmExports['fflush'] != 'undefined', 'missing Wasm export: fflush');
   assert(typeof wasmExports['strerror'] != 'undefined', 'missing Wasm export: strerror');
@@ -1740,8 +1769,8 @@ function assignWasmExports(wasmExports) {
   assert(typeof wasmExports['emscripten_stack_get_current'] != 'undefined', 'missing Wasm export: emscripten_stack_get_current');
   assert(typeof wasmExports['memory'] != 'undefined', 'missing Wasm export: memory');
   assert(typeof wasmExports['__indirect_function_table'] != 'undefined', 'missing Wasm export: __indirect_function_table');
-  _sort_hand_by_points = Module['_sort_hand_by_points'] = createExportWrapper('sort_hand_by_points', 1);
   _wasm_ok = Module['_wasm_ok'] = createExportWrapper('wasm_ok', 0);
+  _house_way = Module['_house_way'] = createExportWrapper('house_way', 1);
   _main = Module['_main'] = createExportWrapper('main', 2);
   _fflush = createExportWrapper('fflush', 1);
   _strerror = createExportWrapper('strerror', 1);
@@ -1757,6 +1786,14 @@ function assignWasmExports(wasmExports) {
 }
 
 var wasmImports = {
+  /** @export */
+  _abort_js: __abort_js,
+  /** @export */
+  emscripten_resize_heap: _emscripten_resize_heap,
+  /** @export */
+  fd_close: _fd_close,
+  /** @export */
+  fd_seek: _fd_seek,
   /** @export */
   fd_write: _fd_write
 };

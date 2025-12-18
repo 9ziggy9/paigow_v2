@@ -1,12 +1,8 @@
-// const EXCEPTION_HAND_MAP = {
-//     "0xA500": 0x050A
-// }
-
 function initCFFI(m) {
     m.ccall("wasm_ok", null, [], []);
     return {
-	sort_hand_by_points : h => m.ccall(
-	    "sort_hand_by_points",
+	house_way : h => m.ccall(
+	    "house_way",
 	    "number",
 	    ["number"],
 	    [h]
@@ -150,15 +146,14 @@ function uiOpenModal(tileState, engine) {
 }
 
 function applyHouseWay(tileState, engine) {
-    console.log("Calling house way.");
     const [h1,h2,l1,l2] = tileState.tileSet();
     const bitwiseRep = tileState.utility.composeTiles(
 	tileState.utility.tileIdToBitRep(h1), tileState.utility.tileIdToBitRep(h2),
 	tileState.utility.tileIdToBitRep(l1), tileState.utility.tileIdToBitRep(l2)
     );
 
-    const sortedHand = engine.sort_hand_by_points(bitwiseRep);
-    tileState.syncHandState(sortedHand);
+    const houseWay = engine.house_way(bitwiseRep);
+    tileState.syncHandState(houseWay);
 
     return tileState.hand();
 }
