@@ -1,7 +1,7 @@
 CC=emcc
 CFLAGS=-Wall -pedantic -Werror -Wconversion
 EXPORTS= -sEXPORTED_FUNCTIONS='[ \
-"_sort_hand_by_points","_wasm_ok","_main"]'\
+"_house_way","_wasm_ok","_main"]'\
 -sEXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
 
 engine.js: main.c
