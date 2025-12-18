@@ -102,19 +102,6 @@ ExceptionMapping map_exception_hand(uint16_t hand) {
   };
 }
 
-uint16_t house_way(uint16_t in) {
-  printf("ENGINE: setting hand ... \n");
-  printf("ENGINE: sorting hand by points ... \n");
-
-  uint16_t sorted = sort_hand_by_points(in);
-  printf("ENGINE: sorted hand: 0x%4x ... \n", sorted);
-
-  ExceptionMapping exception_filter = map_exception_hand(sorted);
-  if (exception_filter.is_exception) return exception_filter.hand;
-
-  return sorted;
-}
-
 void define_exception(HouseWayRule rule) {
   const TileClass *h1 = &rule.h1;
   const TileClass *h2 = &rule.h2;
@@ -203,7 +190,93 @@ void initialize_exceptions(void) {
   printf("ENGINE: exception list initialized successfully ... \n");
 }
 
+
+typedef struct AnalysisPairs {
+  bool has_pairs;
+  size_t num_pairs;
+  TileRank tiles[4];
+  size_t pair_pos[2];
+  uint16_t hand;
+} AnalysisPairs;
+
+// Very interestingly, XOR(2) has property:
+// 0 -> 2, 1 -> 3, 2 -> 0, 3 -> 1
+// see: https://en.wikipedia.org/wiki/Exclusive_or
+AnalysisPairs map_paired_hand(uint16_t hand) {
+  AnalysisPairs info = {
+    .has_pairs = false,
+    .num_pairs = 0,
+    .tiles     = {0},
+    .pair_pos  = {0},
+    .hand      = 0,
+  };
+
+  UNPACK_HAND_INTO_BUFFER(info.tiles, hand);
+
+  for (size_t n = 0; n < 3; n++) {
+    if (info.tiles[n] == info.tiles[n + 1]) {
+      info.has_pairs = true;
+      info.pair_pos[info.num_pairs++] = n;
+    }
+  }
+
+  // Refactor me.
+  if (info.has_pairs) {
+    size_t p1 = info.pair_pos[0];
+    size_t p2 = info.pair_pos[0] + 1;
+    if (info.num_pairs > 1 && info.tiles[p1] < info.tiles[p1^2]) {
+        info.hand = (uint16_t)HAND_FROM_TILES(info.tiles[p1 ^ 2],
+                                              info.tiles[p2 ^ 2],
+                                              info.tiles[p1],
+                                              info.tiles[p2]);
+    } else {
+        info.hand = (uint16_t)HAND_FROM_TILES(info.tiles[p1],
+                                              info.tiles[p2],
+                                              info.tiles[p1 ^ 2],
+                                              info.tiles[p2 ^ 2]);
+    }
+  }
+
+// DEBUG
+#if 1
+  printf("ENGINE: unpacked --> 0x%x 0x%x 0x%x 0x%x\n",
+         info.tiles[0],
+         info.tiles[1],
+         info.tiles[2],
+         info.tiles[3]
+         );
+  if (info.has_pairs) {
+    printf("ENGINE: hand has %zu pairs.\n", info.num_pairs);
+    for (size_t i = 0; i < info.num_pairs; i++) {
+      printf("ENGINE: pair %-8s @ %zu\n",
+             rank_to_name(info.tiles[info.pair_pos[i]]),
+	     info.pair_pos[i]
+             );
+    }
+  }
+#endif
+
+  return info;
+}
+
+uint16_t house_way(uint16_t in) {
+  printf("ENGINE: setting hand ... \n");
+  printf("ENGINE: sorting hand by points ... \n");
+
+  uint16_t sorted = sort_hand_by_points(in);
+  printf("ENGINE: sorted hand: 0x%4x ... \n", sorted);
+
+  ExceptionMapping exception_filter = map_exception_hand(sorted);
+  if (exception_filter.is_exception) return exception_filter.hand;
+
+  AnalysisPairs pair_filter = map_paired_hand(sorted);
+  if (pair_filter.has_pairs) return pair_filter.hand;
+
+  return sorted;
+}
+
 int main(void) {
+  printf("ENGINE: entering main ... \n");
   initialize_exceptions();
   return 0;
 }
