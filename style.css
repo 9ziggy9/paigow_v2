@@ -1,5 +1,15 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
+::selection {
+  background: transparent; /* Custom background color */
+  color: #000; /* Custom text color */
+}
+
+::-moz-selection { /* Firefox */
+  background: #ffcc00;
+  color: #000;
+}
+
 body {
     height: 100vh;
     overflow: hidden;
