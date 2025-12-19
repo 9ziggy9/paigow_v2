@@ -133,60 +133,46 @@ void define_exception(HouseWayRule rule) {
 
 void initialize_exceptions(void) {
   printf("ENGINE: initializing exception list ... \n");
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_ANY_EIGHT, TC_ANY_SEVEN, TC_ANY_FOUR});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPGOW, TC_ANY_SEVEN, TC_BON});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_ANY_EIGHT, TC_CHOPGOW, TC_ANY_FOUR});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPGOW, TC_FU, TC_ANY_SEVEN});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPGOW, TC_FU, TC_ANY_EIGHT});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_ANY_FOUR, TC_FU, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_ANY_SIX, TC_GEEJUN, TC_TEEN_OR_DAY, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_LOOK, TC_CHONG, TC_ANY_FOUR});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_LOOK, TC_CHONG, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPNG, TC_MUUY, TC_PING});
-  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_ANY_SIX, TC_MUUY, TC_PING});
-  define_exception((HouseWayRule){TC_DAY, TC_CHOPNG, TC_TEEN, TC_ANY_FOUR});
-  define_exception((HouseWayRule){TC_DAY, TC_ANY_SIX, TC_TEEN, TC_ANY_FOUR});
-  define_exception((HouseWayRule){TC_TEEN, TC_ANY_SIX, TC_DAY, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_DAY, TC_FU, TC_TEEN, TC_ANY_TEN});
-  define_exception((HouseWayRule){TC_FU, TC_ANY_SIX, TC_MUUY, TC_PING});
-  define_exception((HouseWayRule){TC_FU, TC_ANY_SEVEN, TC_MUUY, TC_PING});
-  define_exception((HouseWayRule){TC_FU, TC_ANY_EIGHT, TC_MUUY, TC_PING});
-  define_exception((HouseWayRule){TC_MUUY, TC_CHOPGOW, TC_FU, TC_PING});
-  define_exception((HouseWayRule){TC_ANY_FOUR, TC_PING, TC_MUUY, TC_FU});
-  define_exception((HouseWayRule){TC_MUUY, TC_CHOPGOW, TC_CHONG, TC_PING});
-  define_exception((HouseWayRule){TC_MUUY, TC_ANY_SEVEN, TC_CHONG, TC_PING});
-  define_exception((HouseWayRule){TC_MUUY, TC_CHOPGOW, TC_PING, TC_ANY_EIGHT});
-  define_exception((HouseWayRule){TC_YUN, TC_FU, TC_MUUY, TC_ANY_SIX});
-  define_exception((HouseWayRule){TC_YUN, TC_PING, TC_FU, TC_ANY_SIX});
-  define_exception((HouseWayRule){TC_YUN, TC_FU, TC_ANY_TEN, TC_ANY_SEVEN});
-  define_exception((HouseWayRule){TC_YUN, TC_FU, TC_ANY_TEN, TC_CHOPBOT});
-  define_exception((HouseWayRule){TC_YUN, TC_ANY_SIX, TC_GOR, TC_CHOPBOT});
-  define_exception((HouseWayRule){TC_CHOPBOT, TC_ANY_SIX, TC_YUN, TC_BON});
-  define_exception((HouseWayRule){TC_YUN, TC_ANY_SEVEN, TC_CHOPBOT, TC_GOR});
-  define_exception((HouseWayRule){TC_YUN, TC_ANY_SEVEN, TC_CHONG, TC_CHOPBOT});
-  define_exception((HouseWayRule){TC_CHONG, TC_GEEJUN, TC_LOOK, TC_ANY_FOUR});
-  define_exception((HouseWayRule){TC_CHONG, TC_GEEJUN, TC_LOOK, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_CHONG, TC_GEEJUN, TC_FU, TC_LOOK});
-  define_exception((HouseWayRule){TC_CHONG, TC_FU, TC_LOOK, TC_ANY_FOUR});
-  define_exception((HouseWayRule){TC_CHONG, TC_FU, TC_LOOK, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_GOR, TC_CHOPNG, TC_BON, TC_GEEJUN});
-  define_exception((HouseWayRule){TC_GOR, TC_CHOPNG, TC_BON, TC_ANY_SIX});
-  define_exception((HouseWayRule){TC_GOR, TC_CHOPNG, TC_BON, TC_ANY_SEVEN});
-  define_exception((HouseWayRule){TC_GOR, TC_CHOPNG, TC_BON, TC_CHOPBOT});
-  define_exception((HouseWayRule){TC_GOR, TC_BON, TC_YUN, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_BON, TC_CHOPNG, TC_GOR, TC_CHOPGOW});
-  define_exception((HouseWayRule){TC_GOR, TC_BON, TC_ANY_TEN, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_GOR, TC_BON, TC_TEEN_OR_DAY, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_BON, TC_FU, TC_GOR, TC_PING});
-  define_exception((HouseWayRule){TC_GOR, TC_FU, TC_BON, TC_MUUY});
-  define_exception((HouseWayRule){TC_LOOK, TC_GEEJUN, TC_ANY_FOUR, TC_ANY_SEVEN});
-  define_exception((HouseWayRule){TC_LOOK, TC_GEEJUN, TC_ANY_SEVEN, TC_CHOPNG});
-  define_exception((HouseWayRule){TC_ANY_FOUR, TC_GEEJUN, TC_YUN, TC_CHOPBOT});
-  define_exception((HouseWayRule){TC_ANY_FOUR, TC_FU, TC_ANY_SIX, TC_ANY_SEVEN});
-  define_exception((HouseWayRule){TC_ANY_TEN, TC_ANY_FOUR, TC_ANY_SIX, TC_ANY_SEVEN});
-  define_exception((HouseWayRule){TC_MUUY, TC_CHOPNG, TC_ANY_FOUR, TC_PING});
-  define_exception((HouseWayRule){TC_PING, TC_ANY_EIGHT, TC_MUUY, TC_ANY_SEVEN});
-  define_exception((HouseWayRule){TC_ANY_FOUR, TC_FU, TC_ANY_TEN, TC_CHOPNG});
+
+  // 9/11 rule for teen/day
+  define_exception((HouseWayRule){TC_TEEN, TC_CHOPGOW, TC_TEEN, TC_FU});
+  define_exception((HouseWayRule){TC_DAY, TC_CHOPGOW, TC_DAY, TC_FU});
+
+  // Gee Jun splits 4-6, 5-6, 6-6
+  define_exception((HouseWayRule){TC_GEEJUN, TC_ANY_SIX, TC_GEEJUN, TC_ANY_FOUR});
+  define_exception((HouseWayRule){TC_GEEJUN, TC_ANY_SIX, TC_GEEJUN, TC_CHOPNG});
+  define_exception((HouseWayRule){TC_GEEJUN, TC_CHONG  , TC_GEEJUN, TC_LOOK});
+
+  // Split 9s with any combination of 2, 10, 12 or with non pairing 10s
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPGOW, TC_ANY_TEN, TC_CHOPGOW});
+  define_exception((HouseWayRule){TC_TEEN, TC_CHOPGOW, TC_DAY, TC_CHOPGOW});
+  define_exception((HouseWayRule){TC_MUUY, TC_CHOPGOW, TC_PING, TC_CHOPGOW});
+
+  // Split 8s with any combination of 2, 10, 11, 12, non pairing 10s or 9/11.
+  // Need to handle both cases individually.
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPBOT, TC_ANY_TEN, TC_CHOPBOT});
+  define_exception((HouseWayRule){TC_TEEN, TC_CHOPBOT, TC_DAY, TC_CHOPBOT});
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPBOT, TC_FU, TC_CHOPBOT});
+  define_exception((HouseWayRule){TC_FU, TC_CHOPBOT, TC_ANY_TEN, TC_CHOPBOT});
+  define_exception((HouseWayRule){TC_FU, TC_CHOPBOT, TC_CHOPGOW, TC_CHOPBOT});
+  define_exception((HouseWayRule){TC_MUUY, TC_CHOPBOT, TC_PING, TC_CHOPBOT});
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_YUN, TC_YUN, TC_ANY_TEN});
+  define_exception((HouseWayRule){TC_TEEN, TC_YUN, TC_DAY, TC_YUN});
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_YUN, TC_YUN, TC_FU});
+  define_exception((HouseWayRule){TC_YUN, TC_FU, TC_YUN, TC_ANY_TEN});
+  define_exception((HouseWayRule){TC_YUN, TC_FU, TC_YUN, TC_CHOPGOW});
+  define_exception((HouseWayRule){TC_YUN, TC_MUUY, TC_YUN, TC_PING});
+
+  // Split 7s with 2/12 and 10/11, handle both cases individually.
+  define_exception((HouseWayRule){TC_TEEN, TC_CHIT, TC_DAY, TC_CHIT});
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHIT, TC_ANY_TEN, TC_CHIT});
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHIT, TC_FU, TC_CHIT});
+  define_exception((HouseWayRule){TC_TEEN, TC_CHOPCHIT, TC_DAY, TC_CHOPCHIT});
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPCHIT, TC_ANY_TEN, TC_CHOPCHIT});
+  define_exception((HouseWayRule){TC_TEEN_OR_DAY, TC_CHOPCHIT, TC_FU, TC_CHOPCHIT});
+
+  
+
   printf("ENGINE: exception list initialized successfully ... \n");
 }
 
