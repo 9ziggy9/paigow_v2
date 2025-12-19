@@ -62,10 +62,8 @@ AnalysisPairs map_paired_hand(uint16_t hand) {
 
 uint16_t house_way(uint16_t in) {
   printf("ENGINE: setting hand ... \n");
-  printf("ENGINE: sorting hand by points ... \n");
 
   uint16_t sorted = sort_hand_by_points(in);
-  printf("ENGINE: sorted hand: 0x%4x ... \n", sorted);
 
   ExceptionMapping exception_filter = map_exception_hand(sorted);
   if (exception_filter.is_exception) return exception_filter.hand;

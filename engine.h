@@ -64,6 +64,7 @@ const uint16_t RANK_TO_POINTS[16] = {
   for (int _N = 0; _N < 4; _N++) (TS)[_N] = GET_NTH_TILE((H), (_N));  \
 } while(0)
 
+// TILE GROUPINGS
 // Single tiles.
 TILE_CLASS(GEEJUN,   3, 1, RK_GEEJUN);
 TILE_CLASS(TEEN,     2, 1, RK_TEEN);
@@ -155,17 +156,14 @@ void define_exception(HouseWayRule rule) {
 }
 
 ExceptionMapping map_exception_hand(uint16_t hand) {
-  printf("ENGINE: checking exception list ... \n");
   for (size_t i = 0; i < HOUSE_WAY_EXCEPTIONS.count; ++i) {
     if (hand == HOUSE_WAY_EXCEPTIONS.items[i].in) {
-      printf("ENGINE: exception hand detected ... \n");
       return (ExceptionMapping) {
         .is_exception = true,
         .hand = HOUSE_WAY_EXCEPTIONS.items[i].out,
       };
     }
   }
-  printf("ENGINE: hand is not an exception ... \n");
   return (ExceptionMapping) {
     .is_exception = false,
     .hand = hand,
