@@ -200,6 +200,18 @@ void aux_split_eights(struct HandInfo *info, const TileRank *os) {
   });
 }
 
+void aux_split_sevens(struct HandInfo *info, const TileRank *os) {
+  if (!tile_matches_class(os[0], &TC_TEEN_OR_DAY) &&
+      !tile_matches_class(os[1], &TC_TEEN_OR_DAY))
+  {
+    set_hand(info, info->paired_tile, info->paired_tile, os[0], os[1]);
+    return;
+  }
+  set_from_class_list(info, os, (const TileClass *[]){
+      &TC_TEEN_OR_DAY, &TC_ANY_TEN, &TC_FU, NULL
+  });
+}
+
 void rule_split_pair(void) {
   for (uint16_t n = 0; n < NUM_LEGAL_PERMS; n++) {
     struct HandInfo *info = &HOUSE_WAY_MAP[n];
@@ -217,6 +229,8 @@ void rule_split_pair(void) {
         aux_split_nines(info, os); break;
       case RK_YUN: case RK_CHOPBOT:
         aux_split_eights(info, os); break;
+      case RK_CHIT: case RK_CHOPCHIT:
+        aux_split_sevens(info, os); break;
       default: break;
     }
   }
