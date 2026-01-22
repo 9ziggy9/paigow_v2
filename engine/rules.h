@@ -259,11 +259,18 @@ void rule_wong_gong_nine(void) {
     extract_unmatched(info->tiles[teen_day_idx], info, os);
 #define OUT_OF_BOUNDS 3
     size_t lowest_idx = OUT_OF_BOUNDS;
-    // note quite sure about this...
-    for (size_t i = 0; i < OUT_OF_BOUNDS; i++) {
-      if (tile_matches_class(os[i], &TC_ANY_SEVEN)) lowest_idx = i;
-      else if (tile_matches_class(os[i], &TC_ANY_EIGHT)) lowest_idx = i;
-      else if (tile_matches_class(os[i], &TC_CHOPGOW)) lowest_idx = i;
+    for (size_t i = 0; i < 3; i++) {
+      if (tile_matches_class(os[i], &TC_ANY_SEVEN)) { lowest_idx = i; break; }
+    }
+    if (lowest_idx == OUT_OF_BOUNDS) {
+      for (size_t i = 0; i < 3; i++) {
+        if (tile_matches_class(os[i], &TC_ANY_EIGHT)) { lowest_idx = i; break; }
+      }
+    }
+    if (lowest_idx == OUT_OF_BOUNDS) {
+      for (size_t i = 0; i < 3; i++) {
+        if (tile_matches_class(os[i], &TC_CHOPGOW)) { lowest_idx = i; break; }
+      }
     }
     if (lowest_idx < OUT_OF_BOUNDS) {
       size_t odx1 = (lowest_idx + 1) % 3;
