@@ -1,19 +1,15 @@
 function initCFFI(m) {
-    m.ccall("wasm_ok", null, [], []);
+    // Initialize engine first
+    m.ccall("wasm_init", null, [], []);
+    
     return {
-	house_way : h => m.ccall(
-	    "house_way",
-	    "number",
-	    ["number"],
-	    [h]
-	),
-	read_raw_tiles  : (n) => m.ccall(
-	    "read_raw_tiles",
-	    null,
-	    ["number"],
-	    [n]
-	),
-    }
+        house_way: h => m.ccall(
+            "get_house_way",
+            "number",
+            ["number"],
+            [h]
+        )
+    };
 }
 
 function initTileState(tileGridId) {
