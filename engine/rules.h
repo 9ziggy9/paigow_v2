@@ -273,6 +273,7 @@ void rule_wong_gong_nine(void) {
       }
     }
     if (lowest_idx < OUT_OF_BOUNDS) {
+      info->has_wong_gong = true;
       size_t odx1 = (lowest_idx + 1) % 3;
       size_t odx2 = (lowest_idx + 2) % 3;
       if (at_least_high_3(os[odx1], os[odx2]))
@@ -293,6 +294,9 @@ void rule_wong_gong_nine(void) {
                      os[lowest_idx], os[odx1]);
     }
   }
+}
+
+void rule_balance_hand(void) {
 }
 
 typedef void (*rule_fn_t)(void);

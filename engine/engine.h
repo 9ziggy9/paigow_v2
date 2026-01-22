@@ -30,6 +30,7 @@ struct HandInfo {
   bool has_gj;
   bool has_teen_or_day;
   bool is_exception;
+  bool has_wong_gong;
   uint8_t num_pairs;
   bool is_splittable;
   TileRank paired_tile;
@@ -136,6 +137,7 @@ void house_way_init(void) {
             HOUSE_WAY_MAP[hand_count].house_way       = sorted;
             HOUSE_WAY_MAP[hand_count].has_gj          = false;
             HOUSE_WAY_MAP[hand_count].has_teen_or_day = false;
+            HOUSE_WAY_MAP[hand_count].has_wong_gong   = false;
             HOUSE_WAY_MAP[hand_count].is_exception    = false;
             HOUSE_WAY_MAP[hand_count].num_pairs       = 0;
             HOUSE_WAY_MAP[hand_count].is_splittable   = false;
