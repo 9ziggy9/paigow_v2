@@ -126,6 +126,16 @@ function uiOpenModal(tileState, engine) {
     loHandContainer.innerHTML = "";
 
     const houseWayHand = applyHouseWay(tileState, engine);
+    
+    console.log("houseWayHand:", houseWayHand);
+
+    console.log("hi:", houseWayHand.hi);
+    console.log("lo:", houseWayHand.lo);
+    
+    // This is line 137 - check which one is undefined
+    console.log("hi[0]:", houseWayHand.hi[0]);
+    console.log("hi[1]:", houseWayHand.hi[1]);
+    
 
     uiTileSetCheckmarks(
 	hiHandContainer.appendChild(houseWayHand.hi[1].cloneNode(true)), false

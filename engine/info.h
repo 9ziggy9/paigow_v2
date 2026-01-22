@@ -58,13 +58,13 @@ void info_count_pairs(void) {
     info->num_pairs = num_pairs;
     if (num_pairs == 1) {
       TileRank paired_tile;
+
       if (info->tiles[0] == info->tiles[1]) paired_tile = info->tiles[0];
       else if (info->tiles[1] == info->tiles[2]) paired_tile = info->tiles[1];
       else paired_tile = info->tiles[2];
-      if (is_splittable_pair[paired_tile]) {
-        info->is_splittable = true;
-        info->split_tile = paired_tile;
-      }
+
+      info->paired_tile = paired_tile;
+      if (is_splittable_pair[paired_tile]) info->is_splittable = true;
     }
   }
 }

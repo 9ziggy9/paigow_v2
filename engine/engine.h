@@ -31,7 +31,7 @@ struct HandInfo {
   bool is_exception;
   uint8_t num_pairs;
   bool is_splittable;
-  TileRank split_tile;
+  TileRank paired_tile;
 };
 
 // Constants
@@ -137,7 +137,7 @@ void house_way_init(void) {
             HOUSE_WAY_MAP[hand_count].is_exception  = false;
             HOUSE_WAY_MAP[hand_count].num_pairs     = 0;
             HOUSE_WAY_MAP[hand_count].is_splittable = false;
-            HOUSE_WAY_MAP[hand_count].split_tile    = NO_TILE;
+            HOUSE_WAY_MAP[hand_count].paired_tile   = NO_TILE;
             hand_count++;
           }
         }

@@ -60,7 +60,7 @@ void print_house_way_map(uint16_t start, uint16_t end) {
     print_tiles(info->tiles);
     printf(" NUM_PAIRS: %d", info->num_pairs);
     if (info->is_splittable)
-      printf(" (split on %s)", rank_to_name(info->split_tile));
+      printf(" (split on %s)", rank_to_name(info->paired_tile));
     if (info->has_gj) printf(" (GEEJUN DETECTED)");
     printf("\n");
   }
