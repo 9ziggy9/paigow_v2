@@ -1,18 +1,21 @@
-CC=emcc
-CFLAGS=-Wall -pedantic -Werror -Wconversion
-EXPORTS= -sEXPORTED_FUNCTIONS='[ \
-"_house_way","_wasm_ok","_main"]'\
--sEXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
+CC = emcc
+CFLAGS = -O3 -s WASM=1 -s EXPORTED_RUNTIME_METHODS='["ccall","cwrap"]'
+ENGINE_DIR = engine
 
-engine.js: main.c
-	$(CC) $(CFLAGS) $(EXPORTS) -o $@ $<
+all: engine.js
 
-.PHONY: clean serve
-serve:
-	python -m http.server 8000
+# Compile WASM from engine code
+engine.js: $(ENGINE_DIR)/wasm.c $(ENGINE_DIR)/engine.h $(ENGINE_DIR)/info.h $(ENGINE_DIR)/rules.h
+	$(CC) $(CFLAGS) \
+		-s EXPORTED_FUNCTIONS='["_wasm_init","_get_house_way","_malloc","_free"]' \
+		$(ENGINE_DIR)/wasm.c \
+		-o engine.js
 
-native: main.c
-	gcc $(CFLAGS) -o $@ $<
+clean:
+	rm -f engine.js engine.wasm
 
-clean:	
-	rm -rf engine.js std.js *.wasm native
+# Native engine builds (for testing/development)
+native:
+	$(MAKE) -C $(ENGINE_DIR)
+
+.PHONY: all clean native

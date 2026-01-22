@@ -1,19 +1,15 @@
 function initCFFI(m) {
-    m.ccall("wasm_ok", null, [], []);
+    // Initialize engine first
+    m.ccall("wasm_init", null, [], []);
+    
     return {
-	house_way : h => m.ccall(
-	    "house_way",
-	    "number",
-	    ["number"],
-	    [h]
-	),
-	read_raw_tiles  : (n) => m.ccall(
-	    "read_raw_tiles",
-	    null,
-	    ["number"],
-	    [n]
-	),
-    }
+        house_way: h => m.ccall(
+            "get_house_way",
+            "number",
+            ["number"],
+            [h]
+        )
+    };
 }
 
 function initTileState(tileGridId) {
@@ -130,6 +126,16 @@ function uiOpenModal(tileState, engine) {
     loHandContainer.innerHTML = "";
 
     const houseWayHand = applyHouseWay(tileState, engine);
+    
+    console.log("houseWayHand:", houseWayHand);
+
+    console.log("hi:", houseWayHand.hi);
+    console.log("lo:", houseWayHand.lo);
+    
+    // This is line 137 - check which one is undefined
+    console.log("hi[0]:", houseWayHand.hi[0]);
+    console.log("hi[1]:", houseWayHand.hi[1]);
+    
 
     uiTileSetCheckmarks(
 	hiHandContainer.appendChild(houseWayHand.hi[1].cloneNode(true)), false
