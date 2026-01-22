@@ -296,7 +296,54 @@ void rule_wong_gong_nine(void) {
   }
 }
 
+void sort_tiles_by_points(const TileRank *tiles, TileRank *sorted) {
+  // Copy tiles to sorted array
+  for (int i = 0; i < 4; i++) {
+    sorted[i] = tiles[i];
+  }
+  
+  // Bubble sort by points (descending)
+  for (int i = 0; i < 3; i++) {
+    for (int j = 0; j < 3 - i; j++) {
+      uint8_t pts_j = rank_to_points(sorted[j]);
+      uint8_t pts_j1 = rank_to_points(sorted[j + 1]);
+      
+      if (pts_j < pts_j1) {
+        TileRank tmp = sorted[j];
+        sorted[j] = sorted[j + 1];
+        sorted[j + 1] = tmp;
+      } else if (pts_j == pts_j1 && sorted[j] < sorted[j + 1]) {
+        // Tie-break by rank
+        TileRank tmp = sorted[j];
+        sorted[j] = sorted[j + 1];
+        sorted[j + 1] = tmp;
+      }
+    }
+  }
+}
+
 void rule_balance_hand(void) {
+  for (uint16_t n = 0; n < NUM_LEGAL_PERMS; n++) {
+    struct HandInfo *info = &HOUSE_WAY_MAP[n];
+    if (info->has_wong_gong || info->num_pairs) continue;
+    TileRank sorted[4];
+    sort_tiles_by_points(info->tiles, sorted);
+    uint8_t score1 = rank_to_points(sorted[0]) + rank_to_points(sorted[3]) % 10;
+    uint8_t score2 = rank_to_points(sorted[1]) + rank_to_points(sorted[2]) % 10;
+    if (score1 != score2) {
+      set_hand(info, sorted[0], sorted[3], sorted[1], sorted[2]);
+    } else {
+      size_t hi_rank_idx = 0;
+      for (size_t i = 0; i < 4; i++) {
+        if (sorted[i] > sorted[hi_rank_idx]) hi_rank_idx = i;
+      }
+      size_t odx1 = (hi_rank_idx == 3 || hi_rank_idx == 0) ? 1 : 0;
+      size_t odx2 = 3 - odx1;
+      set_hand(info,
+               sorted[hi_rank_idx], sorted[3 - hi_rank_idx],
+               sorted[odx1], sorted[odx2]);
+    }
+  }
 }
 
 typedef void (*rule_fn_t)(void);
@@ -305,6 +352,7 @@ rule_fn_t HOUSE_WAY_RULES[] = {
   rule_keep_pairs,
   rule_split_pair,
   rule_wong_gong_nine,
+  rule_balance_hand,
   NULL // sentinel value
 };
 
