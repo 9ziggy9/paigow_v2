@@ -109,6 +109,16 @@ void extract_non_paired(const struct HandInfo *info, TileRank *nps) {
     if (info->tiles[i] != info->paired_tile) nps[other_idx++] = info->tiles[i];
   }
 }
+void extract_unmatched(const TileRank t,
+                       const struct HandInfo *info,
+                       TileRank *ums)
+{
+  size_t other_idx = 0;
+  for (size_t i = 0; i < 4; i++) {
+    if (other_idx > 2) return;
+    if (info->tiles[i] != t) ums[other_idx++] = info->tiles[i];
+  }
+}
 
 void rule_keep_pairs(void) {
   for (uint16_t n = 0; n < NUM_LEGAL_PERMS; n++) {
@@ -121,30 +131,27 @@ void rule_keep_pairs(void) {
   }
 }
 
-void set_from_class_list(struct HandInfo *info,
+void set_pair_from_class_list(struct HandInfo *info,
                          const TileRank  *os,
                          const TileClass *cls[])
 {
   TileRank p = info->paired_tile;
-  if (!(tile_in_classes(os[0], cls) && tile_in_classes(os[1], cls))) return;
+  if (!(tile_in_classes(os[0], cls) && tile_in_classes(os[1], cls)))
+    return set_hand(info, p, p, os[0], os[1]);
   if (rank_to_points(os[0]) > rank_to_points(os[1]))
-    set_hand(info, p, os[0], p, os[1]);
-  else if (rank_to_points(os[0]) < rank_to_points(os[1]))
-    set_hand(info, p, os[1], p, os[0]);
-  else if (os[0] > os[1]) // tie break by rank
-    set_hand(info, p, os[0], p, os[1]);
-  else
-    set_hand(info, p, os[1], p, os[0]);
+    return set_hand(info, p, os[0], p, os[1]);
+  if (rank_to_points(os[0]) < rank_to_points(os[1]))
+    return set_hand(info, p, os[1], p, os[0]);
+  if (os[0] > os[1]) // tie break by rank
+    return set_hand(info, p, os[0], p, os[1]);
+  return set_hand(info, p, os[1], p, os[0]);
 }
 
 void aux_split_geejun(struct HandInfo *info, const TileRank *os) {
   if (!tile_matches_class(os[0], &TC_ANY_SIX) &&
       !tile_matches_class(os[1], &TC_ANY_SIX))
-  {
-    set_hand(info, info->paired_tile, info->paired_tile, os[0], os[1]);
-    return;
-  }
-  set_from_class_list(info, os, (const TileClass *[]) {
+    return set_hand(info, info->paired_tile, info->paired_tile, os[0], os[1]);
+  return set_pair_from_class_list(info, os, (const TileClass *[]) {
       &TC_ANY_FOUR, &TC_CHOPNG, &TC_ANY_SIX, NULL
   });
 }
@@ -171,14 +178,14 @@ void aux_split_teen_day(struct HandInfo *info, const TileRank *os) {
   // for a bare minimum split, we would have the case that we have precisely
   // a four and a 6; this implies a total sum of 34
   if (sum_h1 + sum_h2 < 34) return;
-  if (sum_h1 > sum_h2)      set_hand(info, p, os[0], p, os[1]);
-  else if (sum_h2 > sum_h1) set_hand(info, p, os[1], p, os[0]);
-  else if (os[0] > os[1])   set_hand(info, p, os[0], p, os[1]);
-  else                      set_hand(info, p, os[1], p, os[0]);
+  if (sum_h1 > sum_h2)      return set_hand(info, p, os[0], p, os[1]);
+  if (sum_h2 > sum_h1)      return set_hand(info, p, os[1], p, os[0]);
+  if (os[0] > os[1])        return set_hand(info, p, os[0], p, os[1]);
+                            return set_hand(info, p, os[1], p, os[0]);
 }
 
 void aux_split_nines(struct HandInfo *info, const TileRank *os) {
-  set_from_class_list(info, os, (const TileClass *[]){
+  set_pair_from_class_list(info, os, (const TileClass *[]){
       &TC_TEEN_OR_DAY, &TC_ANY_TEN, NULL
   });
 }
@@ -190,24 +197,18 @@ void aux_split_eights(struct HandInfo *info, const TileRank *os) {
        tile_matches_class(os[0], &TC_CHOPGOW)))
   {
     if (rank_to_points(os[0]) < rank_to_points(os[1]))
-      set_hand(info, info->paired_tile, os[0], info->paired_tile, os[1]);
-    else
-      set_hand(info, info->paired_tile, os[1], info->paired_tile, os[0]);
-    return;
+      return set_hand(info, info->paired_tile, os[0], info->paired_tile, os[1]);
+    return set_hand(info, info->paired_tile, os[1], info->paired_tile, os[0]);
   }
-  set_from_class_list(info, os, (const TileClass *[]){
+  return set_pair_from_class_list(info, os, (const TileClass *[]){
       &TC_TEEN_OR_DAY, &TC_ANY_TEN, &TC_FU, NULL
   });
 }
 
 void aux_split_sevens(struct HandInfo *info, const TileRank *os) {
-  if (!tile_matches_class(os[0], &TC_TEEN_OR_DAY) &&
-      !tile_matches_class(os[1], &TC_TEEN_OR_DAY))
-  {
-    set_hand(info, info->paired_tile, info->paired_tile, os[0], os[1]);
-    return;
-  }
-  set_from_class_list(info, os, (const TileClass *[]){
+  if (!info->has_teen_or_day)
+    return set_hand(info, info->paired_tile, info->paired_tile, os[0], os[1]);
+  return set_pair_from_class_list(info, os, (const TileClass *[]){
       &TC_TEEN_OR_DAY, &TC_ANY_TEN, &TC_FU, NULL
   });
 }
@@ -236,11 +237,67 @@ void rule_split_pair(void) {
   }
 }
 
+bool at_least_high_3(TileRank t1, TileRank t2) {
+  uint8_t points = (rank_to_points(t1) + rank_to_points(t2)) % 10;
+  if (points > 3) return true;
+  if (points == 3) return (t1 > RK_CHONG) || (t2 > RK_CHONG);
+  return false;
+
+}
+
+void rule_wong_gong_nine(void) {
+  for (uint16_t n = 0; n < NUM_LEGAL_PERMS; n++) {
+    struct HandInfo *info = &HOUSE_WAY_MAP[n];
+    if (!info->has_teen_or_day || info->num_pairs) continue;
+    size_t teen_day_idx = 0;
+    for (size_t i = 0; i < 4; i++) {
+      if (tile_matches_class(info->tiles[i], &TC_TEEN_OR_DAY)) {
+        teen_day_idx = i;
+        break;
+      }
+    }
+    TileRank os[3] = { NO_TILE, NO_TILE, NO_TILE };
+    extract_unmatched(info->tiles[teen_day_idx], info, os);
+#define OUT_OF_BOUNDS 3
+    size_t lowest_idx = OUT_OF_BOUNDS;
+    for (size_t i = 0; i < OUT_OF_BOUNDS; i++) {
+      if (tile_matches_class(os[i], &TC_ANY_SEVEN)) {
+        lowest_idx = i;
+        break;
+      }
+      if (tile_matches_class(os[i], &TC_ANY_EIGHT)) lowest_idx = i;
+      else if (tile_matches_class(os[i], &TC_CHOPGOW)) lowest_idx = i;
+    }
+    if (lowest_idx < OUT_OF_BOUNDS) {
+      size_t odx1 = (lowest_idx + 1) % 3;
+      size_t odx2 = (lowest_idx + 2) % 3;
+      if (at_least_high_3(os[odx1], os[odx2])) {
+        set_hand(info, info->tiles[teen_day_idx], os[lowest_idx],
+                 os[odx1], os[odx2]);
+      } else if (tile_matches_class(os[odx1], &TC_ANY_EIGHT) &&
+                 at_least_high_3(os[odx2], os[lowest_idx]))
+            set_hand(info, info->tiles[teen_day_idx], os[odx1],
+                    os[lowest_idx], os[odx2]);
+        else if (tile_matches_class(os[odx2], &TC_ANY_EIGHT) &&
+                 at_least_high_3(os[odx1], os[lowest_idx]))
+            set_hand(info, info->tiles[teen_day_idx], os[odx2],
+                     os[lowest_idx], os[odx1]);
+        else if (tile_matches_class(os[odx1], &TC_CHOPGOW))
+            set_hand(info, info->tiles[teen_day_idx], os[odx1],
+                     os[lowest_idx], os[odx2]);
+        else
+            set_hand(info, info->tiles[teen_day_idx], os[odx2],
+                     os[lowest_idx], os[odx1]);
+    }
+  }
+}
+
 typedef void (*rule_fn_t)(void);
 rule_fn_t HOUSE_WAY_RULES[] = {
   rule_two_pair,
   rule_keep_pairs,
   rule_split_pair,
+  rule_wong_gong_nine,
   NULL // sentinel value
 };
 

@@ -20,9 +20,9 @@ const bool is_splittable_pair[16] = {
   [RK_CHOPCHIT] = true,  [RK_CHOPBOT]  = true,
   [RK_CHOPGOW]  = true,  [RK_LOOK]     = false,
   [RK_CHIT]     = true,  [RK_PING]     = false,
-  [RK_FU]       = false, [RK_BON]      = true,
+  [RK_FU]       = false, [RK_BON]      = false,
   [RK_CHONG]    = false, [RK_MUUY]     = false,
-  [RK_GOR]      = true,  [RK_YUN]      = true,
+  [RK_GOR]      = false, [RK_YUN]      = true,
   [RK_DAY]      = true,  [RK_TEEN]     = true,
 };
 
@@ -42,11 +42,13 @@ uint8_t count_pairs(uint16_t h) {
   return pairs;
 }
 
-void info_has_geejun(void) {
+void info_tiles(void) {
   for (uint16_t n = 0; n < NUM_LEGAL_PERMS; n++) {
     struct HandInfo *info = &HOUSE_WAY_MAP[n];
     for (size_t i = 0; i < 4; i++) {
       if (info->tiles[i] == RK_GEEJUN) info->has_gj = true;
+      if (info->tiles[i] == RK_TEEN || info->tiles[i] == RK_DAY)
+        info->has_teen_or_day = true;
     }
   }
 }
@@ -71,7 +73,7 @@ void info_count_pairs(void) {
 
 typedef void (*info_fn_t)(void);
 info_fn_t HOUSE_WAY_INFO[] = {
-  info_has_geejun,
+  info_tiles,
   info_count_pairs,
   NULL // sentinel value
 };
