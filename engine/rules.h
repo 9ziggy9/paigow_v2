@@ -242,7 +242,6 @@ bool at_least_high_3(TileRank t1, TileRank t2) {
   if (points > 3) return true;
   if (points == 3) return (t1 > RK_CHONG) || (t2 > RK_CHONG);
   return false;
-
 }
 
 void rule_wong_gong_nine(void) {
@@ -260,6 +259,7 @@ void rule_wong_gong_nine(void) {
     extract_unmatched(info->tiles[teen_day_idx], info, os);
 #define OUT_OF_BOUNDS 3
     size_t lowest_idx = OUT_OF_BOUNDS;
+    // note quite sure about this...
     for (size_t i = 0; i < OUT_OF_BOUNDS; i++) {
       if (tile_matches_class(os[i], &TC_ANY_SEVEN)) lowest_idx = i;
       else if (tile_matches_class(os[i], &TC_ANY_EIGHT)) lowest_idx = i;
@@ -268,22 +268,21 @@ void rule_wong_gong_nine(void) {
     if (lowest_idx < OUT_OF_BOUNDS) {
       size_t odx1 = (lowest_idx + 1) % 3;
       size_t odx2 = (lowest_idx + 2) % 3;
-      if (at_least_high_3(os[odx1], os[odx2])) {
+      if (at_least_high_3(os[odx1], os[odx2]))
         set_hand(info, info->tiles[teen_day_idx], os[lowest_idx],
                  os[odx1], os[odx2]);
-      } else if (tile_matches_class(os[odx1], &TC_ANY_EIGHT) &&
-                 at_least_high_3(os[odx2], os[lowest_idx]))
-            set_hand(info, info->tiles[teen_day_idx], os[odx1],
+      else if (tile_matches_class(os[odx1], &TC_ANY_EIGHT) &&
+               at_least_high_3(os[odx2], os[lowest_idx]))
+        set_hand(info, info->tiles[teen_day_idx], os[odx1],
                     os[lowest_idx], os[odx2]);
-        else if (tile_matches_class(os[odx2], &TC_ANY_EIGHT) &&
-                 at_least_high_3(os[odx1], os[lowest_idx]))
-            set_hand(info, info->tiles[teen_day_idx], os[odx2],
+      else if (tile_matches_class(os[odx2], &TC_ANY_EIGHT) &&
+               at_least_high_3(os[odx1], os[lowest_idx]))
+        set_hand(info, info->tiles[teen_day_idx], os[odx2],
                      os[lowest_idx], os[odx1]);
-        else if (tile_matches_class(os[odx1], &TC_CHOPGOW))
-            set_hand(info, info->tiles[teen_day_idx], os[odx1],
-                     os[lowest_idx], os[odx2]);
-        else
-            set_hand(info, info->tiles[teen_day_idx], os[odx2],
+      else if (tile_matches_class(os[odx1], &TC_CHOPGOW))
+        set_hand(info, info->tiles[teen_day_idx], os[odx1],
+                 os[lowest_idx], os[odx2]);
+      else set_hand(info, info->tiles[teen_day_idx], os[odx2],
                      os[lowest_idx], os[odx1]);
     }
   }
