@@ -121,40 +121,104 @@ void rule_keep_pairs(void) {
   }
 }
 
-void rule_split_geejun(void) {
-  for (uint16_t n = 0; n < NUM_LEGAL_PERMS; n++) {
-    struct HandInfo *info = &HOUSE_WAY_MAP[n];
-    if (info->paired_tile != RK_GEEJUN) continue;
-    if (info->num_pairs != 1 || !info->is_splittable) continue;
+void set_from_class_list(struct HandInfo *info,
+                         const TileRank  *os,
+                         const TileClass *cls[])
+{
+  TileRank p = info->paired_tile;
+  if (!(tile_in_classes(os[0], cls) && tile_in_classes(os[1], cls))) return;
+  if (rank_to_points(os[0]) > rank_to_points(os[1]))
+    set_hand(info, p, os[0], p, os[1]);
+  else if (rank_to_points(os[0]) < rank_to_points(os[1]))
+    set_hand(info, p, os[1], p, os[0]);
+  else if (os[0] > os[1]) // tie break by rank
+    set_hand(info, p, os[0], p, os[1]);
+  else
+    set_hand(info, p, os[1], p, os[0]);
+}
 
-    TileRank p = info->paired_tile;
-    TileRank os[2] = { NO_TILE, NO_TILE };
+void aux_split_geejun(struct HandInfo *info, const TileRank *os) {
+  if (!tile_matches_class(os[0], &TC_ANY_SIX) &&
+      !tile_matches_class(os[1], &TC_ANY_SIX))
+  {
+    set_hand(info, info->paired_tile, info->paired_tile, os[0], os[1]);
+    return;
+  }
+  set_from_class_list(info, os, (const TileClass *[]) {
+      &TC_ANY_FOUR, &TC_CHOPNG, &TC_ANY_SIX, NULL
+  });
+}
 
-    extract_non_paired(info, os);
-
-    // We have to have at least ONE SIX
-    if (!tile_matches_class(os[0], &TC_ANY_SIX) &&
-        !tile_matches_class(os[1], &TC_ANY_SIX))
-    {
-      set_hand(info, p, p, os[0], os[1]);
-      continue;
-    }
-
-    const TileClass *valid_snd[] = {
-      &TC_ANY_FOUR, &TC_CHOPNG, &TC_ANY_SIX, NULL,
-    };
-
-    if (!tile_in_classes(os[0], valid_snd) ||
-        !tile_in_classes(os[1], valid_snd)) continue;
-
+void aux_split_teen_day(struct HandInfo *info, const TileRank *os) {
+  TileRank p = info->paired_tile;
+  // For exactly, 9/11
+  if ((tile_matches_class(os[0], &TC_FU) &&
+       tile_matches_class(os[1], &TC_CHOPGOW)) ||
+      (tile_matches_class(os[1], &TC_FU) &&
+       tile_matches_class(os[0], &TC_CHOPGOW)))
+  {
     if (rank_to_points(os[0]) > rank_to_points(os[1]))
-      set_hand(info, p, os[0], p, os[1]);
-    else if (rank_to_points(os[0]) < rank_to_points(os[1]))
-      set_hand(info, p, os[1], p, os[0]);
-    else if (os[0] > os[1]) // tie break
       set_hand(info, p, os[0], p, os[1]);
     else
       set_hand(info, p, os[1], p, os[0]);
+    return;
+  }
+  // we temporarily use a value of 12 to denote teen/day points
+  uint8_t sum_h1 = rank_to_points(os[0]) + 12;
+  uint8_t sum_h2 = rank_to_points(os[1]) + 12;
+
+  // TODO: DOUBLE CHECK THIS!!!!
+  // for a bare minimum split, we would have the case that we have precisely
+  // a four and a 6; this implies a total sum of 34
+  if (sum_h1 + sum_h2 < 34) return;
+  if (sum_h1 > sum_h2)      set_hand(info, p, os[0], p, os[1]);
+  else if (sum_h2 > sum_h1) set_hand(info, p, os[1], p, os[0]);
+  else if (os[0] > os[1])   set_hand(info, p, os[0], p, os[1]);
+  else                      set_hand(info, p, os[1], p, os[0]);
+}
+
+void aux_split_nines(struct HandInfo *info, const TileRank *os) {
+  set_from_class_list(info, os, (const TileClass *[]){
+      &TC_TEEN_OR_DAY, &TC_ANY_TEN, NULL
+  });
+}
+
+void aux_split_eights(struct HandInfo *info, const TileRank *os) {
+  if ((tile_matches_class(os[0], &TC_FU) &&
+       tile_matches_class(os[1], &TC_CHOPGOW)) ||
+      (tile_matches_class(os[1], &TC_FU) &&
+       tile_matches_class(os[0], &TC_CHOPGOW)))
+  {
+    if (rank_to_points(os[0]) < rank_to_points(os[1]))
+      set_hand(info, info->paired_tile, os[0], info->paired_tile, os[1]);
+    else
+      set_hand(info, info->paired_tile, os[1], info->paired_tile, os[0]);
+    return;
+  }
+  set_from_class_list(info, os, (const TileClass *[]){
+      &TC_TEEN_OR_DAY, &TC_ANY_TEN, &TC_FU, NULL
+  });
+}
+
+void rule_split_pair(void) {
+  for (uint16_t n = 0; n < NUM_LEGAL_PERMS; n++) {
+    struct HandInfo *info = &HOUSE_WAY_MAP[n];
+    if (info->num_pairs != 1 || !info->is_splittable) continue;
+
+    TileRank os[2] = { NO_TILE, NO_TILE };
+    extract_non_paired(info, os);
+
+    switch (info->paired_tile) {
+      case RK_GEEJUN:
+        aux_split_geejun(info, os); break;
+      case RK_TEEN : case RK_DAY:
+        aux_split_teen_day(info, os); break;
+      case RK_CHOPGOW:
+        aux_split_nines(info, os); break;
+      case RK_YUN: case RK_CHOPBOT:
+        aux_split_eights(info, os); break;
+      default: break;
+    }
   }
 }
 
@@ -162,7 +226,7 @@ typedef void (*rule_fn_t)(void);
 rule_fn_t HOUSE_WAY_RULES[] = {
   rule_two_pair,
   rule_keep_pairs,
-  rule_split_geejun,
+  rule_split_pair,
   NULL // sentinel value
 };
 
