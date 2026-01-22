@@ -261,11 +261,8 @@ void rule_wong_gong_nine(void) {
 #define OUT_OF_BOUNDS 3
     size_t lowest_idx = OUT_OF_BOUNDS;
     for (size_t i = 0; i < OUT_OF_BOUNDS; i++) {
-      if (tile_matches_class(os[i], &TC_ANY_SEVEN)) {
-        lowest_idx = i;
-        break;
-      }
-      if (tile_matches_class(os[i], &TC_ANY_EIGHT)) lowest_idx = i;
+      if (tile_matches_class(os[i], &TC_ANY_SEVEN)) lowest_idx = i;
+      else if (tile_matches_class(os[i], &TC_ANY_EIGHT)) lowest_idx = i;
       else if (tile_matches_class(os[i], &TC_CHOPGOW)) lowest_idx = i;
     }
     if (lowest_idx < OUT_OF_BOUNDS) {
